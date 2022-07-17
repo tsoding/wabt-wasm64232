@@ -24,6 +24,10 @@ As far as I'm concerned the only thing memory64 does is that it allows you to in
 
 This technically defeats the point of memory64 extension which is being able to address more than 4GB of memory, so use this utility only when you know for sure that you 64-bit program does not use more than 4GB.
 
+## License
+
+[./src/tools/wasm64232.cc](./src/tools/wasm64232.cc) is released under MIT license.
+
 ---
 
 *original README.md*
