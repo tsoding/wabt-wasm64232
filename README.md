@@ -28,6 +28,8 @@ This technically defeats the point of memory64 extension which is being able to 
 
 *original README.md*
 
+---
+
 [![Github CI Status](https://github.com/WebAssembly/wabt/workflows/CI/badge.svg)](https://github.com/WebAssembly/wabt)
 
 # WABT: The WebAssembly Binary Toolkit
