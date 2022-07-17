@@ -1,3 +1,33 @@
+# wasm64232
+
+**WARNING! This tool is not fully finished! It may not work with all possible wasm64 binaries!**
+
+A simple tool that converts wasm64 binaries to wasm32 ones. Based on the codebase of the original [wabt](https://github.com/WebAssembly/wabt).
+
+## Build
+
+```console
+$ mkdir build 
+$ cd build/
+$ cmake ..
+$ make
+$ ./wasm64232 -o /path/to/main32.wasm /path/to/main64.wasm
+```
+
+## Use case scenario
+
+You have a wasm64 binary that you can't recompile as wasm32. [memory64](https://github.com/WebAssembly/memory64) is very much experimental as of 18.07.2022 and is not supported easily everywhere. With wasm64232 you can simple convert your wasm64 binary to wasm32.
+
+## How does it work?
+
+As far as I'm concerned the only thing memory64 does is that it allows you to index the memory with i64 values (where the default wasm32 allows only i32). wasm64232 searches for all `store` and `load` instructions in your binary and truncates their pointers from i64 to i32.
+
+This technically defeats the point of memory64 extension which is being able to address more than 4GB of memory, so use this utility only when you know for sure that you 64-bit program does not use more than 4GB.
+
+---
+
+*original README.md*
+
 [![Github CI Status](https://github.com/WebAssembly/wabt/workflows/CI/badge.svg)](https://github.com/WebAssembly/wabt)
 
 # WABT: The WebAssembly Binary Toolkit
