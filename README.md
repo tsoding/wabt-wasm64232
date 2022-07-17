@@ -7,7 +7,7 @@ A simple tool that converts wasm64 binaries to wasm32 ones. Based on the codebas
 ## Build
 
 ```console
-$ mkdir build 
+$ mkdir build
 $ cd build/
 $ cmake ..
 $ make
@@ -16,7 +16,7 @@ $ ./wasm64232 -o /path/to/main32.wasm /path/to/main64.wasm
 
 ## Use case scenario
 
-You have a wasm64 binary that you can't recompile as wasm32. [memory64](https://github.com/WebAssembly/memory64) is very much experimental as of 18.07.2022 and is not supported easily everywhere. With wasm64232 you can simple convert your wasm64 binary to wasm32.
+You have a wasm64 binary that you can't recompile as wasm32. [memory64](https://github.com/WebAssembly/memory64) is very much experimental as of 18.07.2022 and is not supported easily everywhere. With wasm64232 you can simply convert your wasm64 binary to wasm32.
 
 ## How does it work?
 
