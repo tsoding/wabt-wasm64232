@@ -9,7 +9,7 @@ A simple tool that converts wasm64 binaries to wasm32 ones. Based on the codebas
 ```console
 $ mkdir build
 $ cd build/
-$ cmake ..
+$ cmake .. -DCMAKE_EXE_LINKER_FLAGS="-static" # this flag is optional, static linking simply produces more portable executables
 $ make wasm64232
 $ ./wasm64232 -o /path/to/main32.wasm /path/to/main64.wasm
 ```
