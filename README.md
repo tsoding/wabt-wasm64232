@@ -10,7 +10,7 @@ A simple tool that converts wasm64 binaries to wasm32 ones. Based on the codebas
 $ mkdir build
 $ cd build/
 $ cmake ..
-$ make
+$ make wasm64232
 $ ./wasm64232 -o /path/to/main32.wasm /path/to/main64.wasm
 ```
 
