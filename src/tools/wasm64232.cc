@@ -118,6 +118,9 @@ void PatchExprList(ExprList *exprs, Store store)
                 break;
 
             case Opcode::I64Store:
+            case Opcode::I64Store8:
+            case Opcode::I64Store16:
+            case Opcode::I64Store32:
                 exprs->insert(it, MakeUnique<CallExpr>(Var(store.i64)));
                 break;
 
