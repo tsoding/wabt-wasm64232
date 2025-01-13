@@ -140,7 +140,7 @@ void PatchExprList(ExprList *exprs, Store store)
                     // std::cout << "I64Shl found " << binary_expr->opcode << std::endl;
                     // exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));  // Convert first operand
                     // exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));  // Convert second operand
-                    // exprs->insert(it, MakeUnique<BinaryExpr>(Opcode::I32Shl));
+                    exprs->insert(it, MakeUnique<BinaryExpr>(Opcode::I32Shl));
                     // exprs->insert(it, MakeUnique<CallExpr>(Var(store.f64)));
                     // exit(1);
                     break;
