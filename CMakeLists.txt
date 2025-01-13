@@ -535,6 +535,13 @@ function(wabt_executable)
 endfunction()
 
 if (BUILD_TOOLS)
+  # wasm64232
+  wabt_executable(
+    NAME wasm64232
+    SOURCES src/tools/wasm64232.cc
+    INSTALL
+  )
+
   # wat2wasm
   wabt_executable(
     NAME wat2wasm
