@@ -104,6 +104,8 @@ void PatchExprList(ExprList *exprs, Store store)
                 exprs->insert(it, MakeUnique<CallExpr>(Var(store.i32)));
                 break;
 
+            case Opcode::I64Store8:
+            case Opcode::I64Store32:
             case Opcode::I64Store:
                 exprs->insert(it, MakeUnique<CallExpr>(Var(store.i64)));
                 break;
@@ -122,78 +124,33 @@ void PatchExprList(ExprList *exprs, Store store)
             }
         }
         break;
-        // case ExprType::Const: {
-        //         auto const_expr = cast<ConstExpr>(&*it);
-        //         if (const_expr->const_.type() == Type::I64) {
-        //             // const_expr->const_.type() = Type::I32;
-        //             const_expr->const_.set_u32(static_cast<uint32_t>(const_expr->const_.u64()));
-        //             // Insert conversion back to i64 since context expects it
-        //             exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
-        //         }
-        //     break;
-        // }
-        case ExprType::Binary: {
-            auto binary_expr = cast<BinaryExpr>(&*it);
-            switch (binary_expr->opcode) {
-                case Opcode::I64Shl: {
-                    // PatchExprList(&cast<BinaryExpr>(&*it)->block.exprs, store);
-                    // std::cout << "I64Shl found " << binary_expr->opcode << std::endl;
-                    // exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));  // Convert first operand
-                    // exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));  // Convert second operand
-                    exprs->insert(it, MakeUnique<BinaryExpr>(Opcode::I32Shl));
-                    // exprs->insert(it, MakeUnique<CallExpr>(Var(store.f64)));
-                    // exit(1);
-                    break;
-                }
-                // case Opcode::I64Shl: {
-                //     // Convert both operands to i32
-                //     it = std::prev(it, 2);
-                //     exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));  // Convert second operand
-                //     it = std::next(it);
-                //     // it = std::prev(it);
-                //     exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));  // Convert first operand
-                //     it = std::next(it);
-                    
-                //     // Replace with i32.shl
-                //     // binary_expr->opcode = Opcode::I32Shl;
-                    
-                //     // Convert result back to i64 since the context expects it
-                //     exprs->insert(std::next(it), MakeUnique<ConvertExpr>(Opcode::I64ExtendI32U));
-                //     // it = std::next(it);  // Move iterator past our inserted conversion
-
-
-                //     break;
-                // }
-                // case Opcode::I64Add: {
-                //     // Replace i64.add with i32.add
-                //     // binary_expr->opcode = Opcode::I32Add;
-                //     exprs->insert(it, MakeUnique<BinaryExpr>(Opcode::I32Add));
-                //     break;
-                // }
-                default: {
-                }
-            }
+        case ExprType::MemorySize:
+            it++;
+            it = exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I64ExtendI32U));
             break;
-        }
-        // case ExprType::LocalGet:
-        // case ExprType::LocalSet: {
-        //     // Convert local variable operations
-        //     auto local_expr = cast<LocalExpr>(&*it);
-        //     // You might need to update the local's type in the function declaration as well
-        //     exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
-        //     break;
-        // }
-        // case ExprType::Const: {
-        //     // Convert i64.const to i32.const
-        //     auto const_expr = cast<ConstExpr>(&*it);
-        //     if (const_expr->const_.type == Type::I64) {
-        //         const_expr->const_.set_i32(static_cast<int32_t>(const_expr->const_.i64()));
-        //     }
-        //     break;
-        // }
-        // case ExprType::Const:
-        //     exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I64ExtendI32U));
-        //     break;
+        case ExprType::MemoryGrow:
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            it++;
+            it = exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I64ExtendI32U));
+            break;
+        case ExprType::MemoryCopy:
+            it--;
+            it--;
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            it++;
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            it++;
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            break;
+        case ExprType::MemoryFill:
+            it--;
+            it--;
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            it++;
+            // exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            it++;
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            break;
         case ExprType::Load:
             exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
             break;
@@ -209,26 +166,7 @@ void PatchExprList(ExprList *exprs, Store store)
     }
 }
 
-// void PatchFuncType(Func* func) {
-//     // Update parameter types
-//     // for (Type& param_type : func->decl.sig.param_types) {
-//     //     if (param_type == Type::I64) {
-//     //         param_type = Type::I32;
-//     //     }
-//     // }
-//     // // Update result types
-//     // for (Type& result_type : func->decl.sig.result_types) {
-//     //     if (result_type == Type::I64) {
-//     //         result_type = Type::I32;
-//     //     }
-//     // }
-//     // // Update local types
-//     // for (auto& local : func->local_types.decls()) {
-//     //     if (local.first == Type::I64) {
-//     //         const_cast<Type&>(local.first) = Type::I32;
-//     //     }
-//     // }
-// }
+
 void PatchFunc(Func *func, Store store)
 {
     PatchExprList(&func->exprs, store);
