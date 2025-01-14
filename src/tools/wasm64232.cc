@@ -135,6 +135,15 @@ void PatchExprList(ExprList *exprs, Store store)
             }
         }
         break;
+        case ExprType::MemorySize:
+            it++;
+            it = exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I64ExtendI32U));
+            break;
+        case ExprType::MemoryGrow:
+            exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
+            it++;
+            it = exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I64ExtendI32U));
+            break;
         case ExprType::Load:
             exprs->insert(it, MakeUnique<ConvertExpr>(Opcode::I32WrapI64));
             break;
